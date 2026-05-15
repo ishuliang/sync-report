@@ -1,0 +1,404 @@
+[
+  {
+    "itemId": "10003",
+    "itemName": "尿液分析+镜检",
+    "reportNodeList": [
+      {
+        "nodeId": "4053",
+        "nodeName": "红细胞镜检"
+      },
+      {
+        "nodeId": "3798",
+        "nodeName": "蛋白质"
+      },
+      {
+        "nodeId": "1420",
+        "nodeName": "比重"
+      },
+      {
+        "nodeId": "3522",
+        "nodeName": "白细胞计数（尿）"
+      },
+      {
+        "nodeId": "4054",
+        "nodeName": "白细胞镜检"
+      },
+      {
+        "nodeId": "3456",
+        "nodeName": "葡萄糖(尿)"
+      },
+      {
+        "nodeId": "4057",
+        "nodeName": "尿酸碱度"
+      },
+      {
+        "nodeId": "1422",
+        "nodeName": "亚硝酸盐"
+      },
+      {
+        "nodeId": "4055",
+        "nodeName": "浊度"
+      },
+      {
+        "nodeId": "3355",
+        "nodeName": "尿微量白蛋白"
+      },
+      {
+        "nodeId": "1425",
+        "nodeName": "酮体"
+      },
+      {
+        "nodeId": "1426",
+        "nodeName": "尿胆原"
+      },
+      {
+        "nodeId": "3555",
+        "nodeName": "颜色"
+      },
+      {
+        "nodeId": "4056",
+        "nodeName": "尿胆红素"
+      },
+      {
+        "nodeId": "4058",
+        "nodeName": "潜血"
+      },
+      {
+        "nodeId": "4059",
+        "nodeName": "尿维生素"
+      }
+    ]
+  },
+  {
+    "itemId": "10300",
+    "itemName": "血常规(五分类)(抽血)",
+    "reportNodeList": [
+      {
+        "nodeId": "3380",
+        "nodeName": "血红蛋白HGB"
+      },
+      {
+        "nodeId": "3134",
+        "nodeName": "平均红细胞体积（MCV）"
+      },
+      {
+        "nodeId": "1413",
+        "nodeName": "平均血小板体积MPV"
+      },
+      {
+        "nodeId": "1417",
+        "nodeName": "中性粒细胞比率"
+      },
+      {
+        "nodeId": "1416",
+        "nodeName": "嗜酸性粒细胞数"
+      },
+      {
+        "nodeId": "3592",
+        "nodeName": "红细胞分布宽度-SD值"
+      },
+      {
+        "nodeId": "3860",
+        "nodeName": "红细胞RBC"
+      },
+      {
+        "nodeId": "1205",
+        "nodeName": "血小板压积PCT"
+      },
+      {
+        "nodeId": "3004",
+        "nodeName": "红细胞分布宽度-CV值"
+      },
+      {
+        "nodeId": "1207",
+        "nodeName": "单核细胞比率"
+      },
+      {
+        "nodeId": "1203",
+        "nodeName": "中性粒细胞数"
+      },
+      {
+        "nodeId": "1209",
+        "nodeName": "嗜碱性粒细胞比率"
+      },
+      {
+        "nodeId": "3859",
+        "nodeName": "白细胞WBC"
+      },
+      {
+        "nodeId": "1412",
+        "nodeName": "血小板PLT"
+      },
+      {
+        "nodeId": "1410",
+        "nodeName": "平均血红蛋白浓度（MCHC）"
+      },
+      {
+        "nodeId": "1418",
+        "nodeName": "淋巴细胞比率"
+      },
+      {
+        "nodeId": "1211",
+        "nodeName": "单核细胞数"
+      },
+      {
+        "nodeId": "1208",
+        "nodeName": "嗜酸性粒细胞比率"
+      },
+      {
+        "nodeId": "3375",
+        "nodeName": "红细胞压积HCT"
+      },
+      {
+        "nodeId": "1273",
+        "nodeName": "平均红细胞血红蛋白量（MCH）"
+      },
+      {
+        "nodeId": "1414",
+        "nodeName": "血小板分布宽度（PDW）"
+      },
+      {
+        "nodeId": "1201",
+        "nodeName": "淋巴细胞数"
+      },
+      {
+        "nodeId": "1415",
+        "nodeName": "嗜碱性粒细胞数"
+      },
+      {
+        "nodeId": "3595",
+        "nodeName": "大型血小板比率"
+      }
+    ]
+  },
+  {
+    "itemId": "10382",
+    "itemName": "肾功四项",
+    "reportNodeList": [
+      {
+        "nodeId": "3584",
+        "nodeName": "肌酐"
+      },
+      {
+        "nodeId": "3525",
+        "nodeName": "葡萄糖"
+      },
+      {
+        "nodeId": "4586",
+        "nodeName": "肾小球滤过率"
+      },
+      {
+        "nodeId": "3589",
+        "nodeName": "尿素"
+      },
+      {
+        "nodeId": "1164",
+        "nodeName": "尿酸(UA)"
+      }
+    ]
+  },
+  {
+    "itemId": "10384",
+    "itemName": "血脂四项",
+    "reportNodeList": [
+      {
+        "nodeId": "3142",
+        "nodeName": "低密度脂蛋白"
+      },
+      {
+        "nodeId": "1172",
+        "nodeName": "高密度脂蛋白"
+      },
+      {
+        "nodeId": "3319",
+        "nodeName": "甘油三酯"
+      },
+      {
+        "nodeId": "1171",
+        "nodeName": "总胆固醇"
+      }
+    ]
+  },
+  {
+    "itemId": "10389",
+    "itemName": "肝功能七项",
+    "reportNodeList": [
+      {
+        "nodeId": "3157",
+        "nodeName": "碱性磷酸酶(ALP)"
+      },
+      {
+        "nodeId": "3751",
+        "nodeName": "前白蛋白"
+      },
+      {
+        "nodeId": "4043",
+        "nodeName": "γ-谷氨酰基转移酶"
+      },
+      {
+        "nodeId": "4045",
+        "nodeName": "白球比值"
+      },
+      {
+        "nodeId": "4042",
+        "nodeName": "天门冬氨酸氨基转移酶"
+      },
+      {
+        "nodeId": "1156",
+        "nodeName": "球蛋白(GLB)"
+      },
+      {
+        "nodeId": "4041",
+        "nodeName": "丙氨酸氨基转移酶"
+      },
+      {
+        "nodeId": "1154",
+        "nodeName": "总蛋白(TP)"
+      },
+      {
+        "nodeId": "1155",
+        "nodeName": "白蛋白(ALB)"
+      }
+    ]
+  },
+  {
+    "itemId": "10473",
+    "itemName": "一般检查",
+    "reportNodeList": [
+      {
+        "nodeId": "3001",
+        "nodeName": "BMI"
+      },
+      {
+        "nodeId": "4114",
+        "nodeName": "心率"
+      },
+      {
+        "nodeId": "1001",
+        "nodeName": "体重"
+      },
+      {
+        "nodeId": "1000",
+        "nodeName": "身高"
+      },
+      {
+        "nodeId": "4316",
+        "nodeName": "血压"
+      }
+    ]
+  },
+  {
+    "itemId": "10523",
+    "itemName": "身体成分分析",
+    "reportNodeList": [
+      {
+        "nodeId": "3268",
+        "nodeName": "身体成分分析"
+      }
+    ]
+  },
+  {
+    "itemId": "10570",
+    "itemName": "体检泌尿系彩超",
+    "reportNodeList": [
+      {
+        "nodeId": "3980",
+        "nodeName": "体检泌尿系彩超"
+      }
+    ]
+  },
+  {
+    "itemId": "10571",
+    "itemName": "★肝胆脾胰彩超",
+    "reportNodeList": [
+      {
+        "nodeId": "3412",
+        "nodeName": "腹部彩超（肝胆脾胰）"
+      }
+    ]
+  },
+  {
+    "itemId": "10576",
+    "itemName": "甲状腺彩超",
+    "reportNodeList": [
+      {
+        "nodeId": "1595",
+        "nodeName": "甲状腺彩超"
+      }
+    ]
+  },
+  {
+    "itemId": "10651",
+    "itemName": "DR全胸正位片体检专用不含片",
+    "reportNodeList": [
+      {
+        "nodeId": "1478",
+        "nodeName": "胸部正侧位检查"
+      }
+    ]
+  },
+  {
+    "itemId": "10674",
+    "itemName": "肝吸虫抗体IgG测定",
+    "reportNodeList": [
+      {
+        "nodeId": "4092",
+        "nodeName": "肝吸虫抗体IgG测定"
+      }
+    ]
+  },
+  {
+    "itemId": "10685",
+    "itemName": "类风湿因子",
+    "reportNodeList": [
+      {
+        "nodeId": "3571",
+        "nodeName": "类风湿因子(RF)"
+      }
+    ]
+  },
+  {
+    "itemId": "10699",
+    "itemName": "肿瘤三项(免疫法)",
+    "reportNodeList": [
+      {
+        "nodeId": "4048",
+        "nodeName": "EB病毒"
+      },
+      {
+        "nodeId": "4052",
+        "nodeName": "甲胎蛋白(免疫法)"
+      },
+      {
+        "nodeId": "4051",
+        "nodeName": "癌胚抗原(免疫法)"
+      }
+    ]
+  },
+  {
+    "itemId": "28",
+    "itemName": "常规心电图"
+  },
+  {
+    "itemId": "37",
+    "itemName": "心功酶四项",
+    "reportNodeList": [
+      {
+        "nodeId": "3322",
+        "nodeName": "羟丁酸脱氢酶"
+      },
+      {
+        "nodeId": "1255",
+        "nodeName": "肌酸激酶同工酶"
+      },
+      {
+        "nodeId": "1254",
+        "nodeName": "肌酸激酶"
+      },
+      {
+        "nodeId": "1176",
+        "nodeName": "乳酸脪氢酶"
+      }
+    ]
+  }
+]

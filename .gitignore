@@ -1,0 +1,38 @@
+# Maven build output
+target/
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IDE - Eclipse
+.project
+.classpath
+.settings/
+.factorypath
+
+# IDE - VSCode
+.vscode/
+
+# Compiled class files
+*.class
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# SQLite database files (生成的运行数据)
+*.db
+*.db-journal
+sync.db
+
+# Temp files
+*.tmp
+*.bak
+*.swp
