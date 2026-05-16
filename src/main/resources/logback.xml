@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <!-- 日志根目录：与下载数据同级，统一存放在 temp/logs/ -->
+    <property name="LOG_HOME" value="${user.dir}/temp/logs"/>
+    <property name="APP_NAME" value="sync-report"/>
+
+    <!-- ====== 控制台输出 ====== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ====== 滚动文件输出 ====== -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 当前日志文件 -->
+        <file>${LOG_HOME}/${APP_NAME}.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 按天滚动，文件名示例：sync-report.2025-01-01.0.log.gz -->
+            <fileNamePattern>${LOG_HOME}/${APP_NAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- 单个文件最大 50MB -->
+            <maxFileSize>50MB</maxFileSize>
+            <!-- 保留最近 30 天 -->
+            <maxHistory>30</maxHistory>
+            <!-- 所有历史日志总大小上限 -->
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ====== 日志级别配置 ====== -->
+    <!-- 业务代码：INFO -->
+    <logger name="com.helianhealth" level="INFO"/>
+    <!-- MyBatis SQL 语句：需要调试时改为 DEBUG -->
+    <logger name="com.helianhealth.family.he.admin.db.mapper" level="INFO"/>
+    <!-- MyBatis 内部：WARN，减少噪音 -->
+    <logger name="org.apache.ibatis" level="WARN"/>
+    <logger name="org.mybatis"       level="WARN"/>
+    <!-- Apache HttpClient：WARN，只看错误 -->
+    <logger name="org.apache.hc" level="WARN"/>
+    <!-- ZooKeeper 内部日志屏蔽 -->
+    <logger name="org.apache.zookeeper" level="ERROR"/>
+
+    <!-- ====== 根日志级别 ====== -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
