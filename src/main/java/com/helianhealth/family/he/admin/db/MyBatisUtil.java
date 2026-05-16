@@ -44,6 +44,11 @@ public final class MyBatisUtil {
         return FACTORY.openSession(true);
     }
 
+    /** 打开手动提交的会话；批量写入时使用，需调用方自行 commit/rollback */
+    public static SqlSession openManualSession() {
+        return FACTORY.openSession(false);
+    }
+
     /** 启动时执行 schema.sql；CREATE TABLE IF NOT EXISTS 保证幂等 */
     private static void initSchema() {
         try (SqlSession session = FACTORY.openSession();

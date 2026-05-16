@@ -42,5 +42,6 @@
     <mappers>
         <mapper resource="mapper/SyncTaskMapper.xml"/>
         <mapper resource="mapper/SyncFailureMapper.xml"/>
+        <mapper resource="mapper/SyncRecordMapper.xml"/>
     </mappers>
 </configuration>

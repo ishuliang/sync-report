@@ -44,3 +44,16 @@ CREATE TABLE IF NOT EXISTS sync_failure (
 
 CREATE INDEX IF NOT EXISTS idx_sync_failure_resolved ON sync_failure(resolved);
 CREATE INDEX IF NOT EXISTS idx_sync_failure_task_ref ON sync_failure(task_id_ref);
+
+CREATE TABLE IF NOT EXISTS sync_record (
+    id           INTEGER     PRIMARY KEY AUTOINCREMENT,
+    hospital_fid VARCHAR(64) NOT NULL,
+    month        VARCHAR(7)  NOT NULL,
+    xingming     VARCHAR(64),
+    shenfenzh    VARCHAR(32),
+    tijian_date  VARCHAR(32),
+    json_content TEXT,
+    create_time  DATETIME    DEFAULT (datetime('now', '+8 hours'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_sync_record_fid_month ON sync_record(hospital_fid, month);

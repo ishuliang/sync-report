@@ -19,7 +19,13 @@ public class Application {
         // 补偿
         // new CompensationService().compensate();
         // 重新下载数据来同步
-        new CompensationService().compensateByDataPrepare();
+        // new CompensationService().compensateByDataPrepare();
+
+        // 合并 sync.db → sync-all.db
+        // new DbMergeTask().run();
+
+        // 扫描 temp/ 目录 JSON 导入 sync_record 表
+        new TempJsonImportTask().run();
     }
 
 }

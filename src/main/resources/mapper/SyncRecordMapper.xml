@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.helianhealth.family.he.admin.db.mapper.SyncRecordMapper">
+
+    <insert id="insertIgnore" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sync_record
+            (hospital_fid, month, xingming, shenfenzh, tijian_date, json_content)
+        VALUES
+            (#{hospitalFid}, #{month}, #{xingming}, #{shenfenzh}, #{tijianDate}, #{jsonContent})
+    </insert>
+
+</mapper>
