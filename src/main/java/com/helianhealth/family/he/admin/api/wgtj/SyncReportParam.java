@@ -1,6 +1,5 @@
 package com.helianhealth.family.he.admin.api.wgtj;
 
-import com.helianhealth.family.he.gateway.client.annotation.ApiParam;
 import lombok.Data;
 
 import java.io.Serializable;

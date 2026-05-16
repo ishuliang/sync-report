@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 通过外部 properties 文件覆盖 url/username/password -->
+    <properties resource="db.properties">
+        <!-- 默认值（SQLite，单文件零部署） -->
+        <property name="jdbc.driver"   value="org.sqlite.JDBC"/>
+        <property name="jdbc.url"      value="jdbc:sqlite:./sync.db"/>
+        <property name="jdbc.username" value=""/>
+        <property name="jdbc.password" value=""/>
+    </properties>
+
+    <settings>
+        <!-- 下划线列名自动映射到驼峰字段 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="SLF4J"/>
+        <setting name="cacheEnabled" value="false"/>
+        <!-- SQLite 不支持 SET AUTOCOMMIT，关闭探测避免 warning -->
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+    </settings>
+
+    <typeAliases>
+        <package name="com.helianhealth.family.he.admin.db.entity"/>
+    </typeAliases>
+
+    <environments default="sqlite">
+        <environment id="sqlite">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver"   value="${jdbc.driver}"/>
+                <property name="url"      value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+                <property name="poolMaximumActiveConnections" value="5"/>
+                <property name="poolMaximumIdleConnections"   value="2"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="mapper/SyncTaskMapper.xml"/>
+        <mapper resource="mapper/SyncFailureMapper.xml"/>
+    </mappers>
+</configuration>

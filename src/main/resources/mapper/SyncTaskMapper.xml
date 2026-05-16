@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.helianhealth.family.he.admin.db.mapper.SyncTaskMapper">
+
+    <resultMap id="taskMap" type="SyncTask">
+        <id property="id" column="id"/>
+        <result property="hospitalFid" column="hospital_fid"/>
+        <result property="hospitalName" column="hospital_name"/>
+        <result property="month" column="month"/>
+        <result property="taskId" column="task_id"/>
+        <result property="zipPwd" column="zip_pwd"/>
+        <result property="status" column="status"/>
+        <result property="totalCount" column="total_count"/>
+        <result property="successCount" column="success_count"/>
+        <result property="failCount" column="fail_count"/>
+        <result property="errorMsg" column="error_msg"/>
+        <result property="retryTimes" column="retry_times"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sync_task(hospital_fid, hospital_name, month, task_id, zip_pwd, status,
+                              total_count, success_count, fail_count, error_msg, retry_times)
+        VALUES(#{hospitalFid}, #{hospitalName}, #{month}, #{taskId}, #{zipPwd}, #{status},
+               #{totalCount}, #{successCount}, #{failCount}, #{errorMsg}, #{retryTimes})
+    </insert>
+
+    <update id="update">
+        UPDATE sync_task SET
+            task_id        = COALESCE(#{taskId}, task_id),
+            zip_pwd        = COALESCE(#{zipPwd}, zip_pwd),
+            status         = #{status},
+            total_count    = #{totalCount},
+            success_count  = #{successCount},
+            fail_count     = #{failCount},
+            error_msg      = #{errorMsg},
+            retry_times    = #{retryTimes},
+            update_time    = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByHospitalAndMonth" resultMap="taskMap">
+        SELECT * FROM sync_task
+        WHERE hospital_fid = #{hospitalFid}
+          AND month = #{month}
+        LIMIT 1
+    </select>
+
+    <select id="selectFailed" resultMap="taskMap">
+        SELECT * FROM sync_task WHERE status = 'FAILED' ORDER BY id
+    </select>
+
+    <update id="updateMeta">
+        UPDATE sync_task SET
+            task_id     = #{taskId},
+            zip_pwd     = #{zipPwd},
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE sync_task
+           SET status      = #{status},
+               error_msg   = #{errorMsg},
+               update_time = CURRENT_TIMESTAMP
+         WHERE id = #{id}
+    </update>
+
+</mapper>
