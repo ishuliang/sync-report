@@ -1,6 +1,6 @@
 # Maven build output
 target/
-
+temp/
 # IDE - IntelliJ IDEA
 .idea/
 *.iml
