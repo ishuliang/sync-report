@@ -37,7 +37,7 @@
             fail_count     = #{failCount},
             error_msg      = #{errorMsg},
             retry_times    = #{retryTimes},
-            update_time    = CURRENT_TIMESTAMP
+            update_time    = datetime('now', '+8 hours')
         WHERE id = #{id}
     </update>
 
@@ -56,7 +56,7 @@
         UPDATE sync_task SET
             task_id     = #{taskId},
             zip_pwd     = #{zipPwd},
-            update_time = CURRENT_TIMESTAMP
+            update_time = datetime('now', '+8 hours')
         WHERE id = #{id}
     </update>
 
@@ -64,8 +64,15 @@
         UPDATE sync_task
            SET status      = #{status},
                error_msg   = #{errorMsg},
-               update_time = CURRENT_TIMESTAMP
+               update_time = datetime('now', '+8 hours')
          WHERE id = #{id}
     </update>
+
+    <select id="selectSuccessWithZeroTotal" resultMap="taskMap">
+        SELECT * FROM sync_task
+        WHERE status = 'SUCCESS'
+          AND (total_count IS NULL OR total_count = 0)
+        ORDER BY id
+    </select>
 
 </mapper>

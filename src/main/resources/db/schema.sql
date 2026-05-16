@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS sync_task (
     fail_count      INTEGER     DEFAULT 0,
     error_msg       TEXT,
     retry_times     INTEGER     DEFAULT 0,
-    create_time     DATETIME    DEFAULT CURRENT_TIMESTAMP,
-    update_time     DATETIME    DEFAULT CURRENT_TIMESTAMP,
+    create_time     DATETIME    DEFAULT (datetime('now', '+8 hours')),
+    update_time     DATETIME    DEFAULT (datetime('now', '+8 hours')),
     UNIQUE(hospital_fid, month)
 );
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS sync_failure (
     error_msg       TEXT,
     retry_times     INTEGER     DEFAULT 0,
     resolved        INTEGER     DEFAULT 0,
-    create_time     DATETIME    DEFAULT CURRENT_TIMESTAMP
+    create_time     DATETIME    DEFAULT (datetime('now', '+8 hours'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_sync_failure_resolved ON sync_failure(resolved);

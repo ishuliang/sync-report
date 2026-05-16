@@ -131,6 +131,66 @@ public class GwtjReportService {
     }
 
     /**
+     * 补偿入口：利用数据库中已存储的 taskId 和 zipPwd，
+     * 直接下载 → 解析 → 推送，跳过 dataPrepare/taskQuery 步骤。
+     * 适用于 status=SUCCESS 但 total_count=0 的任务补偿。
+     *
+     * @param task      已存储 taskId/zipPwd 的任务记录
+     * @param fid       网关机构 fid
+     * @param isPrint   "1"=仅打印不推送，其他=真实推送
+     * @param userId    网关 userId
+     * @param token     网关 token
+     * @param stationId 网关 stationId
+     */
+    public String reprocessByStoredTask(SyncTask task, String fid, String isPrint,
+                                        String userId, String token, String stationId) {
+        String taskId = task.getTaskId();
+        String zipPwd = task.getZipPwd();
+        if (taskId == null || zipPwd == null) {
+            log.error("[补偿] task.taskId 或 task.zipPwd 为空，无法补偿 id={}", task.getId());
+            return "error:no_taskId_or_zipPwd";
+        }
+        int size = 0, successCount = 0, failCount = 0;
+        try {
+            log.info("[补偿] 开始下载文件 taskId={}, hospital={}, month={}",
+                    taskId, task.getHospitalName(), task.getMonth());
+            List<GwtjRecord> records = downloadAndHandleFile(taskId, zipPwd, task);
+            List<CustomerAndManualReportParam> params =
+                    buildReportParam(records, fid, task.getHospitalName());
+            size = params.size();
+            log.info("[补偿] 解析完成，共 {} 条记录，开始推送", size);
+            for (CustomerAndManualReportParam param : params) {
+                param.getArchiveCreateParam().setLastReportStation(task.getHospitalName());
+                if ("1".equals(isPrint)) {
+                    String prettyJson = JSON.toJSONString(param,
+                            com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat);
+                    log.info("[补偿仅打印] 建档参数: {}", prettyJson);
+                    successCount++;
+                } else {
+                    try {
+                        sendToGateway(param, userId, token, stationId);
+                        successCount++;
+                        log.info("[补偿] 推送成功 name={}", param.getArchiveCreateParam().getName());
+                    } catch (Exception e) {
+                        failCount++;
+                        log.error("[补偿] 推送失败 name={}", param.getArchiveCreateParam().getName(), e);
+                        recordFailure(task.getId(), task.getHospitalFid(), task.getMonth(),
+                                param, "PUSH_GATEWAY", e.getMessage());
+                    }
+                }
+            }
+            updateTaskResult(task.getId(), "SUCCESS", null, size, successCount, failCount);
+            log.info("[补偿] 完成 hospital={}, month={}, 总计={}, 成功={}, 失败={}",
+                    task.getHospitalName(), task.getMonth(), size, successCount, failCount);
+        } catch (Exception e) {
+            log.error("[补偿] 重处理失败 hospital={}, month={}", task.getHospitalName(), task.getMonth(), e);
+            updateTaskResult(task.getId(), "FAILED", e.getMessage(), size, successCount, failCount);
+            return "error:" + e.getMessage();
+        }
+        return "success:" + successCount + "/" + size;
+    }
+
+    /**
      * 确保任务记录存在并标记为 RUNNING；若已 SUCCESS 返回 null（调用方应跳过）。
      */
     private SyncTask ensureTaskRecord(String hospitalFid, String hospitalName, String month) {
@@ -475,6 +535,14 @@ public class GwtjReportService {
         Path tempZip = tempRoot.resolve(baseName + ".zip");
         // 解压目录
         Path tempDir = tempRoot.resolve(baseName);
+        // 解压前清空目录，避免残留旧文件被混入解析
+        if (Files.exists(tempDir)) {
+            try (java.util.stream.Stream<Path> walk = Files.walk(tempDir)) {
+                walk.sorted(java.util.Comparator.reverseOrder())
+                    .filter(p -> !p.equals(tempDir))
+                    .forEach(p -> { try { Files.delete(p); } catch (Exception ignore) {} });
+            }
+        }
         Files.createDirectories(tempDir);
         List<GwtjRecord> result = new java.util.ArrayList<>();
         try {
@@ -724,8 +792,8 @@ public class GwtjReportService {
                 log.info("没有可同步的医院");
                 return;
             }
-            int poolSize = Math.min(hospitals.size(), 4);
-            ExecutorService executor = Executors.newFixedThreadPool(poolSize);
+
+            ExecutorService executor = Executors.newFixedThreadPool(hospitals.size());
             // 按配置从 sync.startMonth 倒序遍历到 sync.endMonth
             String startMonthStr = CONF.getProperty("sync.startMonth", "2019-10");
             String endMonthStr   = CONF.getProperty("sync.endMonth",   "2015-01");

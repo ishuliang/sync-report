@@ -29,4 +29,7 @@ public interface SyncTaskMapper {
     int updateStatus(@Param("id") Long id,
                      @Param("status") String status,
                      @Param("errorMsg") String errorMsg);
+
+    /** 查询已成功但 total_count=0 的任务（用于数据补偿重跑） */
+    List<SyncTask> selectSuccessWithZeroTotal();
 }
