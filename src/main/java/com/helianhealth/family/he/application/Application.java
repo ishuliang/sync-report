@@ -7,7 +7,7 @@ public class Application {
         GwtjReportService service = new GwtjReportService();
         service.syncReport("yy_220106001002",
                 "正阳社区卫生服务中心",
-                "2022-09",
+                "2022-12",
                 "HL07731",
                 "0",
                 "1655",

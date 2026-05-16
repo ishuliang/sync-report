@@ -15,6 +15,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class HttpsClientUtils {
 
     // 证书配置
@@ -54,7 +57,7 @@ public class HttpsClientUtils {
                     "  - classpath根目录/" + P12_PATH);
         }
 
-        System.out.println("成功加载证书文件: " + (certFile != null ? certFile.getAbsolutePath() : "classpath:" + P12_PATH));
+        log.info("成功加载证书文件: {}", (certFile != null ? certFile.getAbsolutePath() : "classpath:" + P12_PATH));
 
         try {
             keyStore.load(inputStream, CERT_PASSWORD.toCharArray());

@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.helianhealth.family.he.admin.model.report.param.CustomerAndManualReportParam;
 import com.helianhealth.family.he.admin.model.report.param.CustomerArchiveCreateParam;
 import com.helianhealth.family.he.admin.model.report.param.ManualFillReportParam;
+import com.helianhealth.family.he.admin.model.report.param.ManualResolveReportDto;
 import com.helianhealth.family.he.admin.model.report.param.ResolveReportItemParam;
 import com.helianhealth.family.he.admin.model.report.param.ResolveReportNodeParam;
 import com.helianhealth.family.he.admin.model.wgtj.*;
@@ -19,9 +20,9 @@ import com.helianhealth.family.he.admin.db.entity.SyncTask;
 import com.helianhealth.family.he.admin.db.mapper.SyncFailureMapper;
 import com.helianhealth.family.he.admin.db.mapper.SyncTaskMapper;
 
+import com.helianhealth.family.he.admin.util.CodeFunctionMapping;
 import com.helianhealth.family.he.admin.util.HttpsClientUtils;
-import com.helianhealth.family.he.admin.model.report.param.ManualResolveReportDto;
-import lombok.RequiredArgsConstructor;
+import com.helianhealth.family.he.admin.util.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -50,7 +51,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor
 public class GwtjReportService {
     /**
      * 1.1 获取访问令牌
@@ -279,26 +279,26 @@ public class GwtjReportService {
             log.error("构建报告参数失败: {}", jsonFilePath, e);
             return;
         }
-        // int successCount = 0, failCount = 0;
-        // for (CustomerAndManualReportParam param : params) {
-        //     param.getArchiveCreateParam().setLastReportStation(hospitalName);
-        //     if ("1".equals(isPrint)) {
-        //         String prettyJson = JSON.toJSONString(param, com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat);
-        //         log.info("[仅打印] 建档参数: {}", prettyJson);
-        //         successCount++;
-        //     } else {
-        //         try {
-        //             sendToGateway(param, userId, token, stationId);
-        //             successCount++;
-        //             log.info("推送成功 name={}", param.getArchiveCreateParam().getName());
-        //         } catch (Exception e) {
-        //             failCount++;
-        //             log.error("推送失败 name={}", param.getArchiveCreateParam().getName(), e);
-        //         }
-        //     }
-        // }
-        // log.info("processJsonFile 完成: 文件={}, 总计={}, 成功={}, 失败={}",
-        //         jsonFile.getFileName(), params.size(), successCount, failCount);
+        int successCount = 0, failCount = 0;
+        for (CustomerAndManualReportParam param : params) {
+            param.getArchiveCreateParam().setLastReportStation(hospitalName);
+            if ("1".equals(isPrint)) {
+                String prettyJson = JSON.toJSONString(param, com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat);
+                log.info("[仅打印] 建档参数: {}", prettyJson);
+                successCount++;
+            } else {
+                try {
+                    sendToGateway(param, userId, token, stationId);
+                    successCount++;
+                    log.info("推送成功 name={}", param.getArchiveCreateParam().getName());
+                } catch (Exception e) {
+                    failCount++;
+                    log.error("推送失败 name={}", param.getArchiveCreateParam().getName(), e);
+                }
+            }
+        }
+        log.info("processJsonFile 完成: 文件={}, 总计={}, 成功={}, 失败={}",
+                jsonFile.getFileName(), params.size(), successCount, failCount);
     }
 
     /**
@@ -456,7 +456,7 @@ public class GwtjReportService {
                 if (statusCode == 200) {
                     return GSON.fromJson(responseBody, TaskQueryResponse.class);
                 } else {
-                    throw new RuntimeException("查询医院列表失败，状态码: " + statusCode + ", 响应: " + responseBody);
+                    throw new RuntimeException("查询任务详情失败，状态码: " + statusCode + ", 响应: " + responseBody);
                 }
             }
         }
