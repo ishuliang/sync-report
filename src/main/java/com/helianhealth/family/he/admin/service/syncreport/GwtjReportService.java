@@ -7,19 +7,20 @@ import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.helianhealth.family.he.admin.api.member.param.CustomerAndManualReportParam;
-import com.helianhealth.family.he.admin.api.member.param.CustomerArchiveCreateParam;
-import com.helianhealth.family.he.admin.api.report.param.ManualFillReportParam;
-import com.helianhealth.family.he.admin.api.report.param.ResolveReportItemParam;
-import com.helianhealth.family.he.admin.api.report.param.ResolveReportNodeParam;
-import com.helianhealth.family.he.admin.api.wgtj.*;
+import com.helianhealth.family.he.admin.model.report.param.CustomerAndManualReportParam;
+import com.helianhealth.family.he.admin.model.report.param.CustomerArchiveCreateParam;
+import com.helianhealth.family.he.admin.model.report.param.ManualFillReportParam;
+import com.helianhealth.family.he.admin.model.report.param.ResolveReportItemParam;
+import com.helianhealth.family.he.admin.model.report.param.ResolveReportNodeParam;
+import com.helianhealth.family.he.admin.model.wgtj.*;
 import com.helianhealth.family.he.admin.db.MyBatisUtil;
 import com.helianhealth.family.he.admin.db.entity.SyncFailure;
 import com.helianhealth.family.he.admin.db.entity.SyncTask;
 import com.helianhealth.family.he.admin.db.mapper.SyncFailureMapper;
 import com.helianhealth.family.he.admin.db.mapper.SyncTaskMapper;
-import com.helianhealth.family.he.base.model.Result;
-import com.helianhealth.family.he.health.api.report.dto.ManualResolveReportDto;
+
+import com.helianhealth.family.he.admin.util.HttpsClientUtils;
+import com.helianhealth.family.he.admin.model.report.param.ManualResolveReportDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
@@ -83,27 +84,13 @@ public class GwtjReportService {
     }
 
 
-    public static void main(String[] args) throws Exception {
-        GwtjReportService service = new GwtjReportService();
-        service.syncReport("yy_220106001002",
-                "正阳社区卫生服务中心",
-                "2022-05",
-                "HL07731",
-                "0",
-                "1655",
-                "d4030aabb095fb0eb76599a81d68fa041655",
-                "HL07731");
-        // service.syncReport();
-    }
-
-
-    public Result<String> syncReport(String hospitalFid, String hospitalName, String month, String fid, String isPrint,
+    public String syncReport(String hospitalFid, String hospitalName, String month, String fid, String isPrint,
                                      String userId, String token, String stationId) {
         // 1. 检查是否已成功同步：幂等跳过 + 失败可重跑
         SyncTask task = ensureTaskRecord(hospitalFid, hospitalName, month);
         if (task == null) {
             // 已 SUCCESS，跳过
-            return Result.createWithData("skip");
+            return "skip";
         }
 
         int size = 0;
@@ -113,7 +100,7 @@ public class GwtjReportService {
             List<CustomerAndManualReportParam> result = syncHospitalReport(month, hospitalFid, fid, hospitalName, task);
             // 任务超时已在 syncHospitalReport 内写表标记 TIMEOUT，这里直接返回，避免被覆盖为 SUCCESS
             if (result == null) {
-                return Result.createWithData("timeout");
+                return "timeout";
             }
             size = result.size();
             // 调用检后方法处理
@@ -140,7 +127,7 @@ public class GwtjReportService {
             log.error("syncReport error", e);
             updateTaskResult(task.getId(), "FAILED", e.getMessage(), size, successCount, failCount);
         }
-        return Result.createWithData("success:" + successCount + "/" + size);
+        return "success:" + successCount + "/" + size;
     }
 
     /**

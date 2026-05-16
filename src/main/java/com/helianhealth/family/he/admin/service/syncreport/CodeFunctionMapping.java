@@ -1,7 +1,7 @@
 package com.helianhealth.family.he.admin.service.syncreport;
 
 
-import com.helianhealth.family.he.admin.api.wgtj.TijianInfo;
+import com.helianhealth.family.he.admin.model.wgtj.TijianInfo;
 
 import java.util.HashMap;
 import java.util.Map;

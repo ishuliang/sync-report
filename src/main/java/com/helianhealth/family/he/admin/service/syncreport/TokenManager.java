@@ -1,8 +1,8 @@
 package com.helianhealth.family.he.admin.service.syncreport;
 
 import com.google.gson.Gson;
-import com.helianhealth.family.he.admin.api.wgtj.TokenData;
-import com.helianhealth.family.he.admin.api.wgtj.TokenResponse;
+import com.helianhealth.family.he.admin.model.wgtj.TokenData;
+import com.helianhealth.family.he.admin.model.wgtj.TokenResponse;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
