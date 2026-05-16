@@ -75,4 +75,10 @@
         ORDER BY id
     </select>
 
+    <select id="selectAllWithZeroTotal" resultMap="taskMap">
+        SELECT * FROM sync_task
+        WHERE total_count IS NULL OR total_count = 0
+        ORDER BY id
+    </select>
+
 </mapper>

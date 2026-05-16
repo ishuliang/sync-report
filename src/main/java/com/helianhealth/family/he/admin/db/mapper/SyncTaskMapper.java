@@ -32,4 +32,7 @@ public interface SyncTaskMapper {
 
     /** 查询已成功但 total_count=0 的任务（用于数据补偿重跑） */
     List<SyncTask> selectSuccessWithZeroTotal();
+
+    /** 查询所有 total_count=0 的任务（不限状态，用于全量补偿重跑） */
+    List<SyncTask> selectAllWithZeroTotal();
 }

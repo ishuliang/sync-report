@@ -191,6 +191,65 @@ public class GwtjReportService {
     }
 
     /**
+     * 补偿入口（重新走 dataPrepare 全流程）：
+     * 重新调用 dataPrepareMonth 提交任务 → 轮询达到 SUCCESS → 下载解压 → 解析 → 推送。
+     * 适用于 total_count=0 且不依赖已存 taskId/zipPwd 的情况（比如旧数据不常存或已失效）。
+     *
+     * @param task      已存 hospital_fid/hospital_name/month 的任务记录
+     * @param fid       网关机构 fid
+     * @param isPrint   "1"=仅打印不推送，其他=真实推送
+     * @param userId    网关 userId
+     * @param token     网关 token
+     * @param stationId 网关 stationId
+     */
+    public String reprocessByDataPrepare(SyncTask task, String fid, String isPrint,
+                                         String userId, String token, String stationId) {
+        String hospitalFid  = task.getHospitalFid();
+        String hospitalName = task.getHospitalName();
+        String month        = task.getMonth();
+        int size = 0, successCount = 0, failCount = 0;
+        try {
+            log.info("[补偿-dataPrepare] 开始重跑 hospital={}, month={}", hospitalName, month);
+            List<CustomerAndManualReportParam> result =
+                    syncHospitalReport(month, hospitalFid, fid, hospitalName, task);
+            if (result == null) {
+                // syncHospitalReport 内部已将该任务标记为 TIMEOUT
+                log.warn("[补偿-dataPrepare] 超时 hospital={}, month={}", hospitalName, month);
+                return "timeout";
+            }
+            size = result.size();
+            log.info("[补偿-dataPrepare] 解析完成，共 {} 条记录，开始推送", size);
+            for (CustomerAndManualReportParam param : result) {
+                param.getArchiveCreateParam().setLastReportStation(hospitalName);
+                if ("1".equals(isPrint)) {
+                    String prettyJson = JSON.toJSONString(param,
+                            com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat);
+                    log.info("[补偿仅打印] 建档参数: {}", prettyJson);
+                    successCount++;
+                } else {
+                    try {
+                        sendToGateway(param, userId, token, stationId);
+                        successCount++;
+                        log.info("[补偿-dataPrepare] 推送成功 name={}", param.getArchiveCreateParam().getName());
+                    } catch (Exception e) {
+                        failCount++;
+                        log.error("[补偿-dataPrepare] 推送失败 name={}", param.getArchiveCreateParam().getName(), e);
+                        recordFailure(task.getId(), hospitalFid, month, param, "PUSH_GATEWAY", e.getMessage());
+                    }
+                }
+            }
+            updateTaskResult(task.getId(), "SUCCESS", null, size, successCount, failCount);
+            log.info("[补偿-dataPrepare] 完成 hospital={}, month={}, 总计={}, 成功={}, 失败={}",
+                    hospitalName, month, size, successCount, failCount);
+        } catch (Exception e) {
+            log.error("[补偿-dataPrepare] 重处理失败 hospital={}, month={}", hospitalName, month, e);
+            updateTaskResult(task.getId(), "FAILED", e.getMessage(), size, successCount, failCount);
+            return "error:" + e.getMessage();
+        }
+        return "success:" + successCount + "/" + size;
+    }
+
+    /**
      * 确保任务记录存在并标记为 RUNNING；若已 SUCCESS 返回 null（调用方应跳过）。
      */
     private SyncTask ensureTaskRecord(String hospitalFid, String hospitalName, String month) {

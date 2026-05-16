@@ -17,7 +17,9 @@ public class Application {
         // service.syncReport();
 
         // 补偿
-        new CompensationService().compensate();
+        // new CompensationService().compensate();
+        // 重新下载数据来同步
+        new CompensationService().compensateByDataPrepare();
     }
 
 }
