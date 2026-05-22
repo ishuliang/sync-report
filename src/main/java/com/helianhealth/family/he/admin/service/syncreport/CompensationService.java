@@ -123,7 +123,7 @@ public class CompensationService {
         String gwUserId  = CONF.getProperty("gateway.userId",    "");
         String gwToken   = CONF.getProperty("gateway.token",     "");
         String gwStation = CONF.getProperty("gateway.stationId", "");
-        int threadCount  = Integer.parseInt(CONF.getProperty("compensation.threadCount", "20"));
+        int threadCount  = Integer.parseInt(CONF.getProperty("compensation.threadCount", "11"));
 
         GwtjReportService service = new GwtjReportService();
         AtomicInteger successCount = new AtomicInteger(0);

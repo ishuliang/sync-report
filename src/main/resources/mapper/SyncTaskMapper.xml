@@ -70,8 +70,7 @@
 
     <select id="selectSuccessWithZeroTotal" resultMap="taskMap">
         SELECT * FROM sync_task
-        WHERE status = 'SUCCESS'
-          AND (total_count IS NULL OR total_count = 0)
+        WHERE  (total_count IS NULL OR total_count = 0)
         ORDER BY id
     </select>
 
