@@ -12,9 +12,13 @@ public interface SyncFailureMapper {
     /** 查询所有未解决的失败明细 */
     List<SyncFailure> selectUnresolved();
 
+    List<SyncFailure> selectUnresolvedByMonth(@Param("month") String month);
+
+    SyncFailure selectById(@Param("id") Long id);
+
     /** 标记为已解决 */
     int markResolved(@Param("id") Long id);
 
     /** 重试次数 +1 */
-    int incrementRetry(@Param("id") Long id);
+    int incrementRetry(@Param("id") Long id, @Param("errorMsg") String errorMsg);
 }

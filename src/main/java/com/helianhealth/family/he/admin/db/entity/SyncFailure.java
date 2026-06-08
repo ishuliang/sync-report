@@ -39,4 +39,8 @@ public class SyncFailure {
     private Integer resolved;
 
     private Date createTime;
+
+    private Date lastRetryTime;
+
+    private Date resolvedTime;
 }

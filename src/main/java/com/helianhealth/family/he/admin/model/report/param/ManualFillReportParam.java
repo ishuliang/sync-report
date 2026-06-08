@@ -47,4 +47,6 @@ public class ManualFillReportParam implements Serializable {
      */
     private List<ResolveReportItemParam> reportItemList;
 
+    private String syncReportId;
+
 }

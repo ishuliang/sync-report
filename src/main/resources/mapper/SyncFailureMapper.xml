@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.helianhealth.family.he.admin.db.mapper.SyncFailureMapper">
 
-    <resultMap id="failureMap" type="SyncFailure">
+    <resultMap id="failureMap" type="com.helianhealth.family.he.admin.db.entity.SyncFailure">
         <id property="id" column="id"/>
         <result property="taskIdRef" column="task_id_ref"/>
         <result property="hospitalFid" column="hospital_fid"/>
@@ -16,6 +16,8 @@
         <result property="retryTimes" column="retry_times"/>
         <result property="resolved" column="resolved"/>
         <result property="createTime" column="create_time"/>
+        <result property="lastRetryTime" column="last_retry_time"/>
+        <result property="resolvedTime" column="resolved_time"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -29,12 +31,29 @@
         SELECT * FROM sync_failure WHERE resolved = 0 ORDER BY id
     </select>
 
+    <select id="selectUnresolvedByMonth" resultMap="failureMap">
+        SELECT * FROM sync_failure
+        WHERE resolved = 0 AND month = #{month}
+        ORDER BY id
+    </select>
+
+    <select id="selectById" resultMap="failureMap">
+        SELECT * FROM sync_failure WHERE id = #{id}
+    </select>
+
     <update id="markResolved">
-        UPDATE sync_failure SET resolved = 1 WHERE id = #{id}
+        UPDATE sync_failure
+        SET resolved = 1,
+            resolved_time = datetime('now', '+8 hours')
+        WHERE id = #{id}
     </update>
 
     <update id="incrementRetry">
-        UPDATE sync_failure SET retry_times = retry_times + 1 WHERE id = #{id}
+        UPDATE sync_failure
+        SET retry_times = retry_times + 1,
+            error_msg = #{errorMsg},
+            last_retry_time = datetime('now', '+8 hours')
+        WHERE id = #{id}
     </update>
 
 </mapper>

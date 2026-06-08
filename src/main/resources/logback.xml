@@ -27,7 +27,7 @@
             <!-- 单个文件最大 50MB -->
             <maxFileSize>50MB</maxFileSize>
             <!-- 保留最近 30 天 -->
-            <maxHistory>30</maxHistory>
+            <maxHistory>365</maxHistory>
             <!-- 所有历史日志总大小上限 -->
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>

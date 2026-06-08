@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.helianhealth.family.he.admin.db.mapper.SyncTaskMapper">
 
-    <resultMap id="taskMap" type="SyncTask">
+    <resultMap id="taskMap" type="com.helianhealth.family.he.admin.db.entity.SyncTask">
         <id property="id" column="id"/>
         <result property="hospitalFid" column="hospital_fid"/>
         <result property="hospitalName" column="hospital_name"/>

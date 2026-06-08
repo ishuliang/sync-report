@@ -45,9 +45,6 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -439,7 +436,7 @@ public class GwtjReportService {
                     mapper.markResolved(f.getId());
                     log.info("重试成功 id={}, name={}", f.getId(), f.getCustomerName());
                 } catch (Exception e) {
-                    mapper.incrementRetry(f.getId());
+                    mapper.incrementRetry(f.getId(), truncate(e.getMessage(), 2000));
                     log.error("重试失败 id={}, name={}", f.getId(), f.getCustomerName(), e);
                 }
             }
@@ -756,6 +753,7 @@ public class GwtjReportService {
             ));
             reportParam.setConclusions(CollectionUtil.newArrayList(conclusion));
             reportParam.setStationName(danganInfo.getJiandangDw());
+            reportParam.setSyncReportId(tijianInfo.getRid());
             param.setManualFillReportParam(reportParam);
             result.add(param);
         }
@@ -821,9 +819,9 @@ public class GwtjReportService {
         }
     }
 
-    private static final String ADD_CUSTOMER_URL = "https://ark-gw.helianhealth.com/admin/customerManage/addCustomerAndManualReport";
+    private static final String ADD_CUSTOMER_URL = "https://cclyqrmyy.helianhealth.com/admin/customerManage/addCustomerAndManualReport";
 
-    private void sendToGateway(CustomerAndManualReportParam param, String userId, String token, String stationId) throws Exception {
+    public void sendToGateway(CustomerAndManualReportParam param, String userId, String token, String stationId) throws Exception {
         String body = GSON.toJson(param);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(ADD_CUSTOMER_URL);
@@ -843,53 +841,54 @@ public class GwtjReportService {
         }
     }
 
-    public void syncReport() {
+    public void syncReport(String month) {
         try {
+            if (StrUtil.isBlank(month) || !month.matches("\\d{4}-\\d{2}")) {
+                throw new IllegalArgumentException("month must use yyyy-MM format");
+            }
+
             HospitalQueryResponse hospitalResponse = this.queryHospitals();
             List<HospitalData> hospitals = hospitalResponse.getData();
             if (CollectionUtil.isEmpty(hospitals)) {
-                log.info("没有可同步的医院");
+                log.info("No hospitals to sync");
                 return;
             }
 
-            ExecutorService executor = Executors.newFixedThreadPool(hospitals.size());
-            // 按配置从 sync.startMonth 倒序遍历到 sync.endMonth
-            String startMonthStr = CONF.getProperty("sync.startMonth", "2019-10");
-            String endMonthStr   = CONF.getProperty("sync.endMonth",   "2015-01");
             final String gwFid     = CONF.getProperty("gateway.fid",      "HL07731");
             final String gwIsPrint = CONF.getProperty("gateway.isPrint",  "2");
             final String gwUserId  = CONF.getProperty("gateway.userId",   "");
             final String gwToken   = CONF.getProperty("gateway.token",    "");
             final String gwStation = CONF.getProperty("gateway.stationId","");
-            List<String> months = new ArrayList<>();
-            LocalDate cursor = LocalDate.parse(startMonthStr + "-01");
-            LocalDate end = LocalDate.parse(endMonthStr + "-01");
-            DateTimeFormatter monthFmt = DateTimeFormatter.ofPattern("yyyy-MM");
-            while (!cursor.isBefore(end)) {
-                months.add(cursor.format(monthFmt));
-                cursor = cursor.minusMonths(1);
-            }
+
             for (HospitalData hospital : hospitals) {
-                final String hospitalFid = hospital.getYiyuanFid();
-                final String hospitalName = hospital.getYiyuanMc();
-                executor.submit(() -> {
-                    for (String month : months) {
-                        log.info("开始同步 hospital={}, month={}", hospitalFid, month);
-                        this.syncReport(
-                                hospitalFid, hospitalName,
-                                month, gwFid, gwIsPrint,
-                                gwUserId, gwToken, gwStation
-                        );
-                    }
-                });
-            }
-            executor.shutdown();
-            boolean finished = executor.awaitTermination(2, TimeUnit.HOURS);
-            if (!finished) {
-                log.warn("部分医院同步任务超时未完成");
+                String hospitalFid = hospital.getYiyuanFid();
+                String hospitalName = hospital.getYiyuanMc();
+                log.info("Start sync report hospital={}, month={}", hospitalFid, month);
+                this.syncReport(
+                        hospitalFid, hospitalName,
+                        month, gwFid, gwIsPrint,
+                        gwUserId, gwToken, gwStation
+                );
             }
         } catch (Exception e) {
-            log.error("syncReport 查询医院列表失败", e);
+            log.error("syncReport failed, month={}", month, e);
         }
     }
+
+    public void syncReport() {
+        String configuredStartMonth = CONF.getProperty("sync.startMonth", "2019-10");
+        String configuredEndMonth   = CONF.getProperty("sync.endMonth",   "2015-01");
+        List<String> configuredMonths = new ArrayList<>();
+        LocalDate configuredCursor = LocalDate.parse(configuredStartMonth + "-01");
+        LocalDate configuredEnd = LocalDate.parse(configuredEndMonth + "-01");
+        DateTimeFormatter configuredMonthFmt = DateTimeFormatter.ofPattern("yyyy-MM");
+        while (!configuredCursor.isBefore(configuredEnd)) {
+            configuredMonths.add(configuredCursor.format(configuredMonthFmt));
+            configuredCursor = configuredCursor.minusMonths(1);
+        }
+        for (String month : configuredMonths) {
+            syncReport(month);
+        }
+    }
+
 }

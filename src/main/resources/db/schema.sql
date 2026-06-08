@@ -39,11 +39,18 @@ CREATE TABLE IF NOT EXISTS sync_failure (
     error_msg       TEXT,
     retry_times     INTEGER     DEFAULT 0,
     resolved        INTEGER     DEFAULT 0,
-    create_time     DATETIME    DEFAULT (datetime('now', '+8 hours'))
+    create_time     DATETIME    DEFAULT (datetime('now', '+8 hours')),
+    last_retry_time DATETIME,
+    resolved_time   DATETIME
 );
+
+ALTER TABLE sync_failure ADD COLUMN last_retry_time DATETIME;
+ALTER TABLE sync_failure ADD COLUMN resolved_time DATETIME;
 
 CREATE INDEX IF NOT EXISTS idx_sync_failure_resolved ON sync_failure(resolved);
 CREATE INDEX IF NOT EXISTS idx_sync_failure_task_ref ON sync_failure(task_id_ref);
+CREATE INDEX IF NOT EXISTS idx_sync_failure_month ON sync_failure(month);
+CREATE INDEX IF NOT EXISTS idx_sync_failure_stage ON sync_failure(stage);
 
 CREATE TABLE IF NOT EXISTS sync_record (
     id           INTEGER     PRIMARY KEY AUTOINCREMENT,
