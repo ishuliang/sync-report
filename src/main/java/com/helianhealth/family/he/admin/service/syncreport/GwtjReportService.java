@@ -420,6 +420,42 @@ public class GwtjReportService {
     /**
      * 重跑所有失败的明细（payload 直接反序列化后调用网关）
      */
+    public PushRecordsResult pushRecords(List<GwtjRecord> records, String fid, String hospitalName,
+                                         String userId, String token, String stationId, String isPrint) throws Exception {
+        List<CustomerAndManualReportParam> params = buildReportParam(records, fid, hospitalName);
+        PushRecordsResult result = new PushRecordsResult();
+        result.setTotal(params.size());
+
+        for (CustomerAndManualReportParam param : params) {
+            param.getArchiveCreateParam().setLastReportStation(hospitalName);
+            String name = param.getArchiveCreateParam() != null ? param.getArchiveCreateParam().getName() : null;
+            if ("1".equals(isPrint)) {
+                String prettyJson = JSON.toJSONString(param, com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat);
+                log.info("[test-push-json print only] param={}", prettyJson);
+                result.setSuccess(result.getSuccess() + 1);
+                continue;
+            }
+
+            try {
+                sendToGateway(param, userId, token, stationId);
+                result.setSuccess(result.getSuccess() + 1);
+            } catch (Exception e) {
+                result.setFail(result.getFail() + 1);
+                result.getErrors().add("name=" + name + ", error=" + e.getMessage());
+                log.error("[test-push-json] push failed name={}", name, e);
+            }
+        }
+        return result;
+    }
+
+    @lombok.Data
+    public static class PushRecordsResult {
+        private int total;
+        private int success;
+        private int fail;
+        private List<String> errors = new ArrayList<>();
+    }
+
     public void retryFailures(String userId, String token, String stationId) {
         try (SqlSession session = MyBatisUtil.openSession()) {
             SyncFailureMapper mapper = session.getMapper(SyncFailureMapper.class);
@@ -706,6 +742,7 @@ public class GwtjReportService {
             archiveCreateParam.setIcdAuto(false);
             archiveCreateParam.setAge(Integer.valueOf(danganInfo.getNianlingYear()));
             archiveCreateParam.setCompany(danganInfo.getJiandangDw());
+            archiveCreateParam.setGender(Integer.valueOf(danganInfo.getXingbie()));
             param.setArchiveCreateParam(archiveCreateParam);
 
             // 组装报告参数
@@ -819,7 +856,7 @@ public class GwtjReportService {
         }
     }
 
-    private static final String ADD_CUSTOMER_URL = "https://cclyqrmyy.helianhealth.com/admin/customerManage/addCustomerAndManualReport";
+    private static final String ADD_CUSTOMER_URL = "https://cclyqrmyy.helianhealth.com/envark/gateway/admin/customerManage/addCustomerAndManualReport";
 
     public void sendToGateway(CustomerAndManualReportParam param, String userId, String token, String stationId) throws Exception {
         String body = GSON.toJson(param);
@@ -854,7 +891,7 @@ public class GwtjReportService {
                 return;
             }
 
-            final String gwFid     = CONF.getProperty("gateway.fid",      "HL07731");
+            final String gwFid     = CONF.getProperty("gateway.fid",      "HL99999");
             final String gwIsPrint = CONF.getProperty("gateway.isPrint",  "2");
             final String gwUserId  = CONF.getProperty("gateway.userId",   "");
             final String gwToken   = CONF.getProperty("gateway.token",    "");

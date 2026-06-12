@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,6 +49,46 @@ public class SyncReportJobService {
             } catch (Exception e) {
                 next.fail(e.getMessage());
                 log.error("Sync report job failed: id={}, month={}", next.getId(), next.getMonth(), e);
+            }
+        });
+        return next;
+    }
+
+    public JobStatus submitRange(List<String> months, String trigger) {
+        if (months == null || months.isEmpty()) {
+            throw new IllegalArgumentException("months must not be empty");
+        }
+        for (String month : months) {
+            if (month == null || !month.matches("\\d{4}-\\d{2}")) {
+                throw new IllegalArgumentException("month must use yyyy-MM format: " + month);
+            }
+        }
+
+        JobStatus current = latest.get();
+        if (current != null && current.isRunning()) {
+            return current;
+        }
+
+        String label = months.get(0) + "~" + months.get(months.size() - 1);
+        JobStatus next = JobStatus.started(label, trigger);
+        if (!latest.compareAndSet(current, next)) {
+            return latest.get();
+        }
+
+        executor.submit(() -> {
+            try {
+                log.info("Sync report range job started: id={}, range={}, count={}, trigger={}",
+                        next.getId(), label, months.size(), next.getTrigger());
+                GwtjReportService reportService = new GwtjReportService();
+                for (String month : months) {
+                    log.info("Sync report range job syncing month: id={}, month={}", next.getId(), month);
+                    reportService.syncReport(month);
+                }
+                next.succeed();
+                log.info("Sync report range job finished: id={}, range={}", next.getId(), label);
+            } catch (Exception e) {
+                next.fail(e.getMessage());
+                log.error("Sync report range job failed: id={}, range={}", next.getId(), label, e);
             }
         });
         return next;

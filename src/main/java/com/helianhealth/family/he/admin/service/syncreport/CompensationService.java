@@ -56,7 +56,7 @@ public class CompensationService {
                     task.getHospitalName(), task.getMonth(), task.getTaskId(), task.getId());
         }
 
-        String gwFid     = CONF.getProperty("gateway.fid",      "HL07731");
+        String gwFid     = CONF.getProperty("gateway.fid",      "HL99999");
         String gwIsPrint = CONF.getProperty("gateway.isPrint",  "2");
         String gwUserId  = CONF.getProperty("gateway.userId",   "");
         String gwToken   = CONF.getProperty("gateway.token",    "");
@@ -118,7 +118,7 @@ public class CompensationService {
                     task.getHospitalName(), task.getMonth(), task.getStatus(), task.getId());
         }
 
-        String gwFid     = CONF.getProperty("gateway.fid",       "HL07731");
+        String gwFid     = CONF.getProperty("gateway.fid",       "HL99999");
         String gwIsPrint = CONF.getProperty("gateway.isPrint",   "2");
         String gwUserId  = CONF.getProperty("gateway.userId",    "");
         String gwToken   = CONF.getProperty("gateway.token",     "");
